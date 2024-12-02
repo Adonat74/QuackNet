@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/admin')]
 class AdminController extends AbstractController
 {
-    #[Route('/all', name: 'app_duck_index', methods: ['GET'])]
+    #[Route('/duck/all', name: 'app_duck_index', methods: ['GET'])]
     public function index(DuckRepository $duckRepository): Response
     {
         return $this->render('duck/index.html.twig', [

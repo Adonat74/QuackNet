@@ -25,9 +25,11 @@ final class DuckController extends AbstractController
 
 
 
-    #[Route('/{id}/edit', name: 'app_duck_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Duck $duck, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
+    #[Route('/edit', name: 'app_duck_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
+        $duck = $this->getUser();
+
         $form = $this->createForm(DuckType::class, $duck);
         $form->handleRequest($request);
 
@@ -41,12 +43,12 @@ final class DuckController extends AbstractController
             $entityManager->persist($duck);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_duck_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_duck_account', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('duck/edit.html.twig', [
+            'duckEditForm' => $form,
             'duck' => $duck,
-            'form' => $form,
         ]);
     }
 
@@ -70,6 +72,10 @@ final class DuckController extends AbstractController
         $entityManager->remove($duck);
         $entityManager->flush();
 
+        $duck = $this->getUser();
+        if (in_array('ROLE_ADMIN', $duck->getRoles())) {
+            return $this->redirectToRoute('app_duck_index');
+        }
         return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
     }
 }

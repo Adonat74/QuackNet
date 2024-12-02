@@ -16,8 +16,8 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager): Response
     {
-        $user = new Duck();
-        $form = $this->createForm(RegistrationFormType::class, $user);
+        $duck = new Duck();
+        $form = $this->createForm(RegistrationFormType::class, $duck);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -25,9 +25,9 @@ class RegistrationController extends AbstractController
             $plainPassword = $form->get('plainPassword')->getData();
 
             // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
+            $duck->setPassword($userPasswordHasher->hashPassword($duck, $plainPassword));
 
-            $entityManager->persist($user);
+            $entityManager->persist($duck);
             $entityManager->flush();
 
             // do anything else you need here, like send an email

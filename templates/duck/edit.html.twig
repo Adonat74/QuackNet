@@ -5,7 +5,23 @@
 {% block body %}
     <h1>Edit Duck</h1>
 
-    {{ include('duck/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ form_errors(duckEditForm) }}
+
+    {{ form_start(duckEditForm) }}
+    {{ form_row(duckEditForm.firstname) }}
+
+    {{ form_row(duckEditForm.lastname) }}
+
+    {{ form_row(duckEditForm.duckname) }}
+
+
+    {{ form_row(duckEditForm.email) }}
+    {{ form_row(duckEditForm.plainPassword, {
+        label: 'Password'
+    }) }}
+
+    <button type="submit" class="btn">Update</button>
+    {{ form_end(duckEditForm) }}
 
 
 {% endblock %}
