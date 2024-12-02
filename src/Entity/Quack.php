@@ -5,10 +5,16 @@ namespace App\Entity;
 use App\Repository\QuackRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Config\Twig\DateConfig;
 
 #[ORM\Entity(repositoryClass: QuackRepository::class)]
 class Quack
 {
+
+    function __construct() {
+        $this->created_at = new \DateTime('now');
+    }
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
