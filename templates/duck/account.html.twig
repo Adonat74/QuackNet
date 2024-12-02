@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Your account{% endblock %}
+
+{% block body %}
+
+    <h1>Your account credentials</h1>
+
+
+    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+        <p>Firstname: {{ app.user.firstname }}</p>
+        <p>Lastname: {{ app.user.lastname }}</p>
+        <p>Duckname: {{ app.user.duckname }}</p>
+        <p>Email: {{ app.user.email }}</p>
+    {% else %}
+        <p>You are not logged in</p>
+    {% endif %}
+
+    <a href="{{ path('app_duck_edit', { id: app.user.id }) }}">Modify informations</a>
+
+
+    <form method="post" action="{{ path('app_duck_delete', { id: app.user.id }) }}" onsubmit="return confirm('Are you sure?');">
+        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ app.user.id) }}">
+        <button class="btn btn-danger">Delete</button>
+    </form>
+
+
+
+{% endblock %}

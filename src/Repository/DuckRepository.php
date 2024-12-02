@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Duck;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bridge\Doctrine\Security\User\UserLoaderInterface;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -12,7 +13,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 /**
  * @extends ServiceEntityRepository<Duck>
  */
-class DuckRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class DuckRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, UserLoaderInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -64,7 +65,7 @@ class DuckRepository extends ServiceEntityRepository implements PasswordUpgrader
 
         return $entityManager->createQuery(
             'SELECT u
-                FROM App\Entity\User u
+                FROM App\Entity\Duck u
                 WHERE u.duckname = :query
                 OR u.email = :query'
         )
