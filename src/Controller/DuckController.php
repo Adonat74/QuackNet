@@ -56,7 +56,7 @@ final class DuckController extends AbstractController
 
 
     #[Route('/delete/{id}', name: 'app_duck_delete', methods: ['POST'])]
-    public function delete(Request $request, Duck $duck, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Duck $duck, EntityManagerInterface $entityManager, Response $response): Response
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
 
