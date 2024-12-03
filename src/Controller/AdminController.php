@@ -19,11 +19,5 @@ class AdminController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_duck_show', methods: ['GET'])]
-    public function show(Duck $duck): Response
-    {
-        return $this->render('duck/show.html.twig', [
-            'duck' => $duck,
-        ]);
-    }
+
 }

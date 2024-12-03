@@ -46,7 +46,7 @@ security:
          - { path: ^/duck/account, roles: ROLE_USER }
          - { path: ^/duck/all, roles: ROLE_ADMIN }
          - { path: ^/duck/edit, roles: ROLE_USER }
-         - { path: ^/duck/\d+, roles: ROLE_ADMIN }
+         - { path: ^/duck/\d+, roles: ROLE_USER }
 
 when@test:
     security:

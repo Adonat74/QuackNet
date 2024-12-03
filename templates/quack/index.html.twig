@@ -5,25 +5,29 @@
 {% block body %}
     <h1>Quack index</h1>
 
+    {{ include('quack/_form.html.twig') }}
+
+
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
+                <th>Image</th>
                 <th>Content</th>
                 <th>Created_at</th>
-                <th>actions</th>
+                <th>Author</th>
             </tr>
         </thead>
         <tbody>
         {% for quack in quacks %}
             <tr>
-                <td>{{ quack.id }}</td>
+                <td><img src="{{ quack.imageUrl }}" alt="duck" width="100" height="100"></td>
                 <td>{{ quack.content }}</td>
                 <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>
-                    <a href="{{ path('app_quack_show', {'id': quack.id}) }}">show</a>
-                    <a href="{{ path('app_quack_edit', {'id': quack.id}) }}">edit</a>
-                </td>
+                <td><a href="{{ path('app_duck_show', { id: quack.duck.id }) }}">{{ quack.duck.duckname }}</a></td>
+
+                {% if is_granted('IS_AUTHENTICATED_FULLY') and quack.duck == duck  %}
+                    <td>{{ include('quack/_delete_form.html.twig') }}</td>
+                {% endif %}
             </tr>
         {% else %}
             <tr>
@@ -33,5 +37,4 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_quack_new') }}">Create new</a>
 {% endblock %}

@@ -14,33 +14,37 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/quack')]
 final class QuackController extends AbstractController
 {
-    #[Route(name: 'app_quack_index', methods: ['GET'])]
-    public function index(QuackRepository $quackRepository): Response
-    {
-        return $this->render('quack/index.html.twig', [
-            'quacks' => $quackRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_quack_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[Route(name: 'app_quack_index', methods: ['GET', 'POST'])]
+    public function index(QuackRepository $quackRepository, Request $request, EntityManagerInterface $entityManager): Response
     {
         $quack = new Quack();
         $form = $this->createForm(QuackType::class, $quack);
         $form->handleRequest($request);
+        $duck = $this->getUser();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($quack);
-            $entityManager->flush();
+        if ($form->isSubmitted()) {
+            if (!$this->isGranted('ROLE_USER')) {
+                throw $this->createAccessDeniedException('You must be logged in to post a quack.');
+            }
 
-            return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
+            if ($form->isValid()) {
+
+                $quack->setDuck($this->getUser());
+                $entityManager->persist($quack);
+                $entityManager->flush();
+
+                return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
+            }
         }
 
-        return $this->render('quack/new.html.twig', [
+        return $this->render('quack/index.html.twig', [
+            'quacks' => $quackRepository->findAll(),
             'quack' => $quack,
+            'duck' => $duck,
             'form' => $form,
         ]);
     }
+
 
     #[Route('/{id}', name: 'app_quack_show', methods: ['GET'])]
     public function show(Quack $quack): Response

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\DuckRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -14,10 +16,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 class Duck implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public function __construct()
+    {
+        $this->quacks = new ArrayCollection();
+    }
 
-//    function __construct() {
-//        $this->roles = ['ROLE_USER'];
-//    }
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -28,8 +31,6 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180)]
     private ?string $lastname = null;
-
-
 
     #[ORM\Column(length: 50, unique: true)]
     #[Assert\Length(
@@ -54,6 +55,12 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column(type: 'json')]
     private array $roles = [];
+
+    /**
+     * @var Collection<int, Quack>
+     */
+    #[ORM\OneToMany(targetEntity: Quack::class, mappedBy: 'duck', orphanRemoval: true)]
+    private Collection $quacks;
 
 //    GETTERS AND SETTERS
 
@@ -168,5 +175,35 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, Quack>
+     */
+    public function getQuacks(): Collection
+    {
+        return $this->quacks;
+    }
+
+    public function addQuack(Quack $quack): static
+    {
+        if (!$this->quacks->contains($quack)) {
+            $this->quacks->add($quack);
+            $quack->setDuck($this);
+        }
+
+        return $this;
+    }
+
+    public function removeQuack(Quack $quack): static
+    {
+        if ($this->quacks->removeElement($quack)) {
+            // set the owning side to null (unless already changed)
+            if ($quack->getDuck() === $this) {
+                $quack->setDuck(null);
+            }
+        }
+
+        return $this;
     }
 }

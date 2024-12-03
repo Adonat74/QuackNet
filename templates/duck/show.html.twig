@@ -8,10 +8,6 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ duck.id }}</td>
-            </tr>
-            <tr>
                 <th>Firstname</th>
                 <td>{{ duck.firstname }}</td>
             </tr>
@@ -23,22 +19,6 @@
                 <th>Duckname</th>
                 <td>{{ duck.duckname }}</td>
             </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ duck.email }}</td>
-            </tr>
-            <tr>
-                <th>Password</th>
-                <td>{{ duck.password }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ duck.roles ? duck.roles|json_encode : '' }}</td>
-            </tr>
         </tbody>
     </table>
-
-    <a href="{{ path('app_duck_index') }}">back to list</a>
-
-    {{ include('duck/_delete_form.html.twig') }}
 {% endblock %}

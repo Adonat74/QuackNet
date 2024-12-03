@@ -26,6 +26,15 @@ class Quack
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created_at = null;
 
+    #[ORM\ManyToOne(inversedBy: 'quacks')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Duck $duck = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $image_url = null;
+
+
+
     public function getId(): ?int
     {
         return $this->id;
@@ -51,6 +60,30 @@ class Quack
     public function setCreatedAt(\DateTimeInterface $created_at): static
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getDuck(): ?Duck
+    {
+        return $this->duck;
+    }
+
+    public function setDuck(?Duck $duck): static
+    {
+        $this->duck = $duck;
+
+        return $this;
+    }
+
+    public function getImageUrl(): ?string
+    {
+        return $this->image_url;
+    }
+
+    public function setImageUrl(?string $image_url): static
+    {
+        $this->image_url = $image_url;
 
         return $this;
     }
