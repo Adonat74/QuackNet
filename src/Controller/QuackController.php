@@ -26,17 +26,13 @@ final class QuackController extends AbstractController
             if (!$this->isGranted('ROLE_USER')) {
                 throw $this->createAccessDeniedException('You must be logged in to post a quack.');
             }
-
             if ($form->isValid()) {
-
                 $quack->setDuck($this->getUser());
                 $entityManager->persist($quack);
                 $entityManager->flush();
-
                 return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
             }
         }
-
         return $this->render('quack/index.html.twig', [
             'quacks' => $quackRepository->findAll(),
             'quack' => $quack,
@@ -59,13 +55,11 @@ final class QuackController extends AbstractController
     {
         $form = $this->createForm(QuackType::class, $quack);
         $form->handleRequest($request);
-
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
             return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
         }
-
         return $this->render('quack/edit.html.twig', [
             'quack' => $quack,
             'form' => $form,

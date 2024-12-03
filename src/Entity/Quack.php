@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\QuackRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Config\Twig\DateConfig;
@@ -13,6 +15,7 @@ class Quack
 
     function __construct() {
         $this->created_at = new \DateTime('now');
+        $this->comments = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -32,6 +35,12 @@ class Quack
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $image_url = null;
+
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'quack', orphanRemoval: true)]
+    private Collection $comments;
 
 
 
@@ -84,6 +93,36 @@ class Quack
     public function setImageUrl(?string $image_url): static
     {
         $this->image_url = $image_url;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setQuack($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getQuack() === $this) {
+                $comment->setQuack(null);
+            }
+        }
 
         return $this;
     }

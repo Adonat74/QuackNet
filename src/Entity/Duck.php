@@ -19,6 +19,7 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->quacks = new ArrayCollection();
+        $this->comments = new ArrayCollection();
     }
 
     #[ORM\Id]
@@ -61,6 +62,12 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\OneToMany(targetEntity: Quack::class, mappedBy: 'duck', orphanRemoval: true)]
     private Collection $quacks;
+
+    /**
+     * @var Collection<int, Comment>
+     */
+    #[ORM\OneToMany(targetEntity: Comment::class, mappedBy: 'duck', orphanRemoval: true)]
+    private Collection $comments;
 
 //    GETTERS AND SETTERS
 
@@ -201,6 +208,36 @@ class Duck implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($quack->getDuck() === $this) {
                 $quack->setDuck(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Comment>
+     */
+    public function getComments(): Collection
+    {
+        return $this->comments;
+    }
+
+    public function addComment(Comment $comment): static
+    {
+        if (!$this->comments->contains($comment)) {
+            $this->comments->add($comment);
+            $comment->setDuck($this);
+        }
+
+        return $this;
+    }
+
+    public function removeComment(Comment $comment): static
+    {
+        if ($this->comments->removeElement($comment)) {
+            // set the owning side to null (unless already changed)
+            if ($comment->getDuck() === $this) {
+                $comment->setDuck(null);
             }
         }
 
