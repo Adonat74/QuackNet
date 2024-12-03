@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Comment;
 use App\Entity\Quack;
+use App\Form\CommentType;
 use App\Form\QuackType;
+use App\Repository\CommentRepository;
 use App\Repository\QuackRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -15,29 +18,67 @@ use Symfony\Component\Routing\Attribute\Route;
 final class QuackController extends AbstractController
 {
     #[Route(name: 'app_quack_index', methods: ['GET', 'POST'])]
-    public function index(QuackRepository $quackRepository, Request $request, EntityManagerInterface $entityManager): Response
+    public function index(QuackRepository $quackRepository, Request $request, EntityManagerInterface $entityManager, CommentRepository $commentRepository): Response
     {
+
         $quack = new Quack();
-        $form = $this->createForm(QuackType::class, $quack);
-        $form->handleRequest($request);
+
+        $quackForm = $this->createForm(QuackType::class, $quack);
+        $quackForm->handleRequest($request);
         $duck = $this->getUser();
 
-        if ($form->isSubmitted()) {
+        if ($quackForm->isSubmitted()) {
             if (!$this->isGranted('ROLE_USER')) {
                 throw $this->createAccessDeniedException('You must be logged in to post a quack.');
             }
-            if ($form->isValid()) {
+            if ($quackForm->isValid()) {
                 $quack->setDuck($this->getUser());
                 $entityManager->persist($quack);
                 $entityManager->flush();
                 return $this->redirectToRoute('app_quack_index', [], Response::HTTP_SEE_OTHER);
             }
         }
+
+
+
+
+
+        $quacks = $quackRepository->findAll();
+
+        $forms = [];
+        $comment = new Comment();
+
+        foreach ($quacks as $quack) {
+            // Create a form with a unique CSRF token ID
+            $form = $this->createForm(CommentType::class, $comment, [
+                'csrf_token_id' => 'comment_form_' . $quack->getId(),
+            ]);
+
+            $form->handleRequest($request);
+
+            if ($form->isSubmitted()) {
+                if (!$this->isGranted('ROLE_USER')) {
+                    throw $this->createAccessDeniedException('You must be logged in to post a comment.');
+                }
+                if ($form->isValid()) {
+                    $comment->setDuck($this->getUser());
+                    $comment->setQuack($quack);
+                    $entityManager->persist($comment);
+                    $entityManager->flush();
+                    return $this->redirectToRoute('app_quack_index');
+                }
+            }
+            $forms[$quack->getId()] = $form->createView();
+        }
+
+
         return $this->render('quack/index.html.twig', [
-            'quacks' => $quackRepository->findAll(),
+            'forms' => $forms,
+            'quacks' => $quacks,
             'quack' => $quack,
             'duck' => $duck,
-            'form' => $form,
+            'quackForm' => $quackForm,
+            'comments' => $commentRepository->findAll()
         ]);
     }
 

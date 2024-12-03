@@ -3,32 +3,47 @@
 {% block title %}Quack index{% endblock %}
 
 {% block body %}
-    <h1>Quack index</h1>
+    <h1 class="mt-3">Quack index</h1>
 
-    {{ include('quack/_form.html.twig') }}
+    <div class="card text-white bg-primary mb-3">
+        <h2 class="card-header">Post a Quack!</h2>
+        <div class="card-body">
+            {{ include('quack/_form.html.twig') }}
+        </div>
+    </div>
+
 
 
     <table class="table">
-        <thead>
-            <tr>
-                <th>Image</th>
-                <th>Content</th>
-                <th>Created_at</th>
-                <th>Author</th>
-            </tr>
-        </thead>
         <tbody>
         {% for quack in quacks %}
+
             <tr>
                 <td><img src="{{ quack.imageUrl }}" alt="duck" width="100" height="100"></td>
                 <td>{{ quack.content }}</td>
                 <td>{{ quack.createdAt ? quack.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td><a href="{{ path('app_duck_show', { id: quack.duck.id }) }}">{{ quack.duck.duckname }}</a></td>
+                <td>
+                    <a href="{{ path('app_duck_show', { id: quack.duck.id }) }}">{{ quack.duck.duckname }}</a>
+                </td>
 
                 {% if is_granted('IS_AUTHENTICATED_FULLY') and quack.duck == duck  %}
                     <td>{{ include('quack/_delete_form.html.twig') }}</td>
                 {% endif %}
+
             </tr>
+            <tr>
+                <td>{{ include('comment/_form.html.twig') }}</td>
+            </tr>
+            {% for comment in comments %}
+                {% if comment.quack == quack  %}
+                    <tr>
+                        <td>{{ comment.content }}</td>
+                        {% if comment.duck == duck or quack.duck == duck  %}
+                            <td>{{ include('comment/_delete_form.html.twig') }}</td>
+                        {% endif %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
         {% else %}
             <tr>
                 <td colspan="4">no records found</td>

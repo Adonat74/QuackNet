@@ -1,4 +1,4 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{{ form_start(forms[quack.id]) }}
+            {{ form_widget(forms[quack.id]) }}
+<button class="btn btn-primary">Save</button>
+{{ form_end(forms[quack.id]) }}
