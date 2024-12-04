@@ -4,26 +4,33 @@
 
 {% block body %}
 
-    <h1>Your account credentials</h1>
+
+    <div class="card mt-3">
+        <h1 class="card-header text-center">
+            Your account credentials
+        </h1>
+
+            <ul class="list-group list-group-flush ">
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <li class="list-group-item fs-3 fw-medium"><span class="text-primary">Firstname:</span> {{ app.user.firstname }}</li>
+                    <li class="list-group-item fs-3 fw-medium"><span class="text-primary">Lastname:</span> {{ app.user.lastname }}</li>
+                    <li class="list-group-item fs-3 fw-medium"><span class="text-primary">Duckname:</span> {{ app.user.duckname }}</li>
+                    <li class="list-group-item fs-3 fw-medium"><span class="text-primary">Email:</span> {{ app.user.email }}</li>
+                <div class=" d-flex justify-content-between mx-3 mb-3">
+                    <div>
+                        <a class="btn btn-warning " href="{{ path('app_duck_edit', { id: app.user.id }) }}">Modify informations</a>
+                    </div>
 
 
-    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-        <p>Firstname: {{ app.user.firstname }}</p>
-        <p>Lastname: {{ app.user.lastname }}</p>
-        <p>Duckname: {{ app.user.duckname }}</p>
-        <p>Email: {{ app.user.email }}</p>
-    {% else %}
-        <p>You are not logged in</p>
-    {% endif %}
-
-    <a href="{{ path('app_duck_edit', { id: app.user.id }) }}">Modify informations</a>
-
-
-    <form method="post" action="{{ path('app_duck_delete', { id: app.user.id }) }}" onsubmit="return confirm('Are you sure?');">
-        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ app.user.id) }}">
-        <button class="btn btn-danger">Delete</button>
-    </form>
-
-
+                    <form method="post" action="{{ path('app_duck_delete', { id: app.user.id }) }}" onsubmit="return confirm('Are you sure?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ app.user.id) }}">
+                        <button class="btn btn-dark">Delete</button>
+                    </form>
+                </div>
+            </ul>
+        {% else %}
+            <p>You are not logged in</p>
+        {% endif %}
+    </div>
 
 {% endblock %}

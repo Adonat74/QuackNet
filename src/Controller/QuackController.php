@@ -40,9 +40,6 @@ final class QuackController extends AbstractController
         }
 
 
-
-
-
         $quacks = $quackRepository->findAll();
 
         $forms = [];
