@@ -16,28 +16,19 @@ class QuackRepository extends ServiceEntityRepository
         parent::__construct($registry, Quack::class);
     }
 
-    //    /**
-    //     * @return Quack[] Returns an array of Quack objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('q')
-    //            ->andWhere('q.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('q.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findAllQuackByDuckname(string $duckname): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
 
-    //    public function findOneBySomeField($value): ?Quack
-    //    {
-    //        return $this->createQueryBuilder('q')
-    //            ->andWhere('q.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        $sql = "
+            SELECT * FROM quack q
+            WHERE q.duckname
+            LIKE '%keyword%'
+            ";
+
+        $resultSet = $conn->executeQuery($sql, ['duckname' => $duckname]);
+
+        // returns an array of arrays (i.e. a raw data set)
+        return $resultSet->fetchAllAssociative();
+    }
 }

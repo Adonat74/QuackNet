@@ -20,7 +20,7 @@
                             <img src="https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/06/urbanbrush-20210617095846219755.jpg" alt="" width="50" height="50">
                             <a href="{{ path('app_duck_show', { id: quack.duck.id }) }}">{{ quack.duck.duckname }}</a>
                         </div>
-                        {% if is_granted('IS_AUTHENTICATED_FULLY') and quack.duck == duck  %}
+                        {% if is_granted('IS_AUTHENTICATED_FULLY') and quack.duck == duck or 'ROLE_ADMIN' in app.user.roles   %}
                             <div>
                                 {{ include('quack/_delete_form.html.twig') }}
                             </div>
@@ -43,7 +43,7 @@
                                             <img src="https://www.urbanbrush.net/web/wp-content/uploads/edd/2021/06/urbanbrush-20210617095846219755.jpg" alt="" width="50" height="50">
                                             <a href="{{ path('app_duck_show', { id: comment.duck.id }) }}">{{ comment.duck.duckname }}</a>
                                         </div>
-                                        {% if comment.duck == duck or quack.duck == duck  %}
+                                        {% if comment.duck == duck or quack.duck == duck or 'ROLE_ADMIN' in app.user.roles  %}
                                             {{ include('comment/_delete_form.html.twig') }}
                                         {% endif %}
                                     </h2>
