@@ -6,6 +6,8 @@ use App\Entity\Comment;
 use App\Entity\Quack;
 use App\Form\CommentType;
 use App\Form\QuackType;
+use App\Form\SearchType;
+use App\Model\SearchData;
 use App\Repository\CommentRepository;
 use App\Repository\QuackRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -21,9 +23,13 @@ final class QuackController extends AbstractController
     public function index(QuackRepository $quackRepository, Request $request, EntityManagerInterface $entityManager, CommentRepository $commentRepository): Response
     {
 
+//      Partie Formulaire des quacks
         $quack = new Quack();
 
-        $quackForm = $this->createForm(QuackType::class, $quack);
+        $quackForm = $this->createForm(QuackType::class, $quack, [
+            'csrf_token_id' => 'quack_form_token',
+
+        ]);
         $quackForm->handleRequest($request);
         $duck = $this->getUser();
 
@@ -39,7 +45,7 @@ final class QuackController extends AbstractController
             }
         }
 
-
+//      Partie formulaire des comments
         $quacks = $quackRepository->findAll();
 
         $forms = [];
@@ -69,13 +75,24 @@ final class QuackController extends AbstractController
         }
 
 
+        $searchData = new SearchData();
+        $searchForm = $this->createForm(SearchType::class, $searchData, [
+            'csrf_token_id' => 'search_form_token',
+        ]);
+
+        $searchForm->handleRequest($request);
+        if ($searchForm->isSubmitted() && $searchForm->isValid()) {
+            $quacks = $quackRepository->findBySearch($searchData);
+        }
+
         return $this->render('quack/index.html.twig', [
             'forms' => $forms,
             'quacks' => $quacks,
             'quack' => $quack,
             'duck' => $duck,
             'quackForm' => $quackForm,
-            'comments' => $commentRepository->findAll()
+            'comments' => $commentRepository->findAll(),
+            'searchForm' => $searchForm,
         ]);
     }
 

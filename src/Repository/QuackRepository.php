@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Quack;
+use App\Model\SearchData;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,19 +17,25 @@ class QuackRepository extends ServiceEntityRepository
         parent::__construct($registry, Quack::class);
     }
 
-    public function findAllQuackByDuckname(string $duckname): array
+    public function findBySearch(SearchData $searchData): array
     {
-        $conn = $this->getEntityManager()->getConnection();
 
-        $sql = "
-            SELECT * FROM quack q
-            WHERE q.duckname
-            LIKE '%keyword%'
-            ";
+        $quacks = $this->createQueryBuilder('q')
+            ->join('q.duck', 'd')
+            ->addSelect('d');
 
-        $resultSet = $conn->executeQuery($sql, ['duckname' => $duckname]);
 
-        // returns an array of arrays (i.e. a raw data set)
-        return $resultSet->fetchAllAssociative();
+        if (!empty($searchData->query)) {
+            $quacks = $quacks
+                ->where('d.duckname LIKE :query')
+                ->setParameter('query', '%' . $searchData->query . '%');
+        }
+
+
+        $quacks = $quacks
+            ->getQuery()
+            ->getResult();
+
+        return $quacks;
     }
 }

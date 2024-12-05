@@ -1,0 +1,8 @@
+{{ form_start(searchForm) }}
+<div class="d-flex my-2 h-50">
+    {{ form_widget(searchForm.query) }}
+
+    <button type="submit" class="btn btn-info w-75 mx-3">{{ button_label|default("search duckname") }}</button>
+</div>
+
+{{ form_end(searchForm) }}
