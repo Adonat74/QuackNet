@@ -13,6 +13,8 @@ class SearchType extends AbstractType {
     {
         $builder
             ->add('query', TextType::class, [
+                'required' => false, // Field is optional
+                'empty_data' => '',
                 'attr' => [
                     'placeholder' => 'Rechercher via un mot clé...'
                 ]

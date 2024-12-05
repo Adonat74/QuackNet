@@ -19,7 +19,6 @@ class QuackRepository extends ServiceEntityRepository
 
     public function findBySearch(SearchData $searchData): array
     {
-
         $quacks = $this->createQueryBuilder('q')
             ->join('q.duck', 'd')
             ->addSelect('d');
@@ -27,10 +26,10 @@ class QuackRepository extends ServiceEntityRepository
 
         if (!empty($searchData->query)) {
             $quacks = $quacks
-                ->where('d.duckname LIKE :query')
+                ->where('q.content LIKE :query')
+                ->orWhere('d.duckname LIKE :query')
                 ->setParameter('query', '%' . $searchData->query . '%');
         }
-
 
         $quacks = $quacks
             ->getQuery()
